@@ -16,6 +16,6 @@ ENV PATH=$PATH:$GRADLE_HOME/bin
 
 CMD ls
 
-RUN gradle installDist
+//RUN gradle installDist
 
-CMD build/install/bin/app
+//CMD build/install/bin/app
