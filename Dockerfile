@@ -14,6 +14,6 @@ RUN mv gradle-${GRADLE_VERSION} ${GRADLE_HOME}
 
 ENV PATH=$PATH:$GRADLE_HOME/bin
 
-RUN gradle installDist
+RUN .gradlew -installDist
 
 CMD build/install/bin/app
