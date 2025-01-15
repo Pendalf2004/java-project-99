@@ -32,7 +32,7 @@ jobs:
       run: gradle build
 
     - name: test
-      run: make test
+      run: gradle test
   
     - name: Test Coverage  
       uses: paambaati/codeclimate-action@v9.0.0
