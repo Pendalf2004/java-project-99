@@ -32,6 +32,11 @@ repositories {
 	mavenCentral()
 }
 
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
