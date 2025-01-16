@@ -32,9 +32,9 @@ repositories {
 	mavenCentral()
 }
 
-//jacoco {
-//    toolVersion = "0.8.7"
-//}
+jacoco {
+    toolVersion = "0.8.12"
+}
 
 
 dependencies {
@@ -47,6 +47,7 @@ dependencies {
 	testImplementation("org.assertj:assertj-core:3.25.3")
 	testImplementation(platform("org.junit:junit-bom:5.11.0-M1"))
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+	testImplementation("org.jacoco:org.jacoco.agent:0.8.12")
 }
 
 tasks.withType<Test> {
