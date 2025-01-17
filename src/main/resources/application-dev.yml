@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: "JDBC_DATABASE_URL, jdbc:h2:mem:project");
+    username:
+    password:

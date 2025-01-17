@@ -41,13 +41,17 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 
+	implementation("com.h2database:h2:2.2.220")
+	implementation("org.postgresql:postgresql:42.2.5")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.assertj:assertj-core:3.25.3")
 	testImplementation(platform("org.junit:junit-bom:5.11.0-M1"))
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
-	testImplementation("org.jacoco:org.jacoco.agent:0.8.12")
+
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 }
 
 tasks.withType<Test> {
