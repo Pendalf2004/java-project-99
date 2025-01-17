@@ -50,7 +50,9 @@ dependencies {
 	testImplementation("org.assertj:assertj-core:3.25.3")
 	testImplementation(platform("org.junit:junit-bom:5.11.0-M1"))
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+
 	implementation("org.jacoco:jacoco-maven-plugin:0.8.12")
+	implementation("org.apache.maven.reporting:maven-reporting-api:4.0.0")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 }
