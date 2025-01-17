@@ -8,7 +8,7 @@ plugins {
 	id("org.springframework.boot") version "3.4.1"
 	id("io.spring.dependency-management") version "1.1.7"
 
-	jacoco
+	id("jacoco")
 	id ("com.adarshr.test-logger") version "3.0.0"
 
 	id("io.freefair.lombok") version "8.10.2"
@@ -50,13 +50,11 @@ dependencies {
 	testImplementation("org.assertj:assertj-core:3.25.3")
 	testImplementation(platform("org.junit:junit-bom:5.11.0-M1"))
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+	implementation("org.jacoco:jacoco-maven-plugin:0.8.12")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 }
 
-tasks.withType<Test> {
-	useJUnitPlatform()
-}
 
 tasks.test {
 	useJUnitPlatform()
@@ -72,7 +70,7 @@ tasks.test {
 
 tasks.jacocoTestReport {
 	dependsOn(tasks.test)
-	reports {
-		xml.required = true
+		reports {
+			xml.required = true
 	}
 }
