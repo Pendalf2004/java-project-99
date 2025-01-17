@@ -42,5 +42,5 @@ jobs:
       with:
         debug: true
         coverageCommand: make report
-        upload-coverage: ${{github.workspace}}build/reports/jacoco/test/jacocoTestReport.xml:jacoco
+        coverageLocations: ${{github.workspace}}build/reports/jacoco/test/jacocoTestReport.xml:jacoco
         
