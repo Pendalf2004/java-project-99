@@ -46,10 +46,10 @@ jobs:
       run: |
           ./cc-test-reporter format-coverage build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
       env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST}}
+          
     - name: Upload coverage to Code Climate
       run: |
           ./cc-test-reporter upload-coverage
       env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST}}
