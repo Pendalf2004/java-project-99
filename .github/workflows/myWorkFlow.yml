@@ -42,9 +42,9 @@ jobs:
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
 
-           ls -lR
+           ls 
            echo -=================================-
-           cd build
+           cd build/classes/java
            ls
  
           
