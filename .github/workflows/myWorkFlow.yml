@@ -37,9 +37,9 @@ jobs:
     - name: jacocoTestReport
       run: make report
           | ls
-          echo -=================================-
-          cd build
-          ls
+          | echo -=================================-
+          | cd build
+          | ls
   
       
     - name: Download Code Climate Test Reporter
