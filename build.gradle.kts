@@ -61,7 +61,14 @@ dependencies {
 	implementation("org.openapitools:jackson-databind-nullable:0.2.6")
 	implementation("org.mapstruct:mapstruct:1.6.3")
 	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+}
 
+sourceSets {
+	test {
+		java {
+			setSrcDirs(listOf("src/test/java/hexlet/code/app"))
+		}
+	}
 }
 
 
@@ -81,6 +88,5 @@ tasks.jacocoTestReport {
 	dependsOn(tasks.test)
 		reports {
 			xml.required = true
-			xml.outputLocation.set(layout.buildDirectory.file("jacocoTestReport.xml"))
 	}
 }
