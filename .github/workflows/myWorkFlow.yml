@@ -36,6 +36,11 @@ jobs:
 
     - name: jacocoTestReport
       run: make report
+      
+    - name: Download Code Climate Test Reporter
+      run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
   
     - name: Format coverage for Code Climate
       run: |
