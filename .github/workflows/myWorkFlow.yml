@@ -36,16 +36,17 @@ jobs:
 
     - name: jacocoTestReport
       run: make report
+          | ls
+          echo -=================================-
+          cd build
+          ls
+  
       
     - name: Download Code Climate Test Reporter
       run: |
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
-          ls
-          echo -=================================-
-          cd build
-          ls
-  
+          
     - name: Format coverage for Code Climate
       run: |
           ./cc-test-reporter format-coverage build/reports/jacoco/test/jacocoTestReport.xml -t jacoco
