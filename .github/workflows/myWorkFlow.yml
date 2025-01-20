@@ -36,7 +36,7 @@ jobs:
   
     - name: Format coverage for Code Climate
       run: |
-          ./cc-test-reporter format-coverage build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
+          ./cc-test-reporter format-coverage ${{github.workspace}}/build/reports/jacoco/test/jacocoTestReport.xml --input-type jacoco
       env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
 
