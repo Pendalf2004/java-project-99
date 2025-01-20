@@ -81,5 +81,6 @@ tasks.jacocoTestReport {
 	dependsOn(tasks.test)
 		reports {
 			xml.required = true
+			xml.outputLocation.set(layout.buildDirectory.file("jacocoTestReport.xml"))
 	}
 }
