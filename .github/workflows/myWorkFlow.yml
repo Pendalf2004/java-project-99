@@ -33,14 +33,27 @@ jobs:
 
     - name: test
       run: gradle test
+
+    - name: jacocoTestReport
+      run: make report
+      
+    - name: Download Code Climate Test Reporter
+      run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+          chmod +x ./cc-test-reporter
+          ls
+          echo -=================================-
+          cd build
+          ls
   
-    - name: Test Coverage  
-      uses: paambaati/codeclimate-action@v9.0.0
+    - name: Format coverage for Code Climate
+      run: |
+          ./cc-test-reporter format-coverage build/reports/jacoco/test/jacocoTestReport.xml -t jacoco
       env:
-        CC_TEST_REPORTER_ID: ${{secrets.CC_TEST}}
-        JACOCO_SOURCE_PATH: ${{github.workspace}}/src/main/java
-      with:
-        debug: true
-        coverageCommand: make report
-        coverageLocations: ${{github.workspace}}build/reports/jacoco/test/jacocoTestReport.xml:jacoco
-        
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST}}
+          
+    - name: Upload coverage to Code Climate
+      run: |
+          ./cc-test-reporter upload-coverage
+      env:
+          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST}}
