@@ -35,17 +35,18 @@ jobs:
       run: gradle test
 
     - name: jacocoTestReport
-      run: make report
-          | ls
-          | echo -=================================-
-          | cd build
-          | ls
-  
+      run: 	./gradlew jacocoTestReport 
       
     - name: Download Code Climate Test Reporter
       run: |
           curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
           chmod +x ./cc-test-reporter
+
+           ls
+           echo -=================================-
+           cd build
+           ls
+ 
           
     - name: Format coverage for Code Climate
       run: |
