@@ -1,24 +1,19 @@
 package hexlet.code.app.DTO.User;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateUserDTO {
+public class UpdateUserDTO {
 
     private String firstName;
 
-    @NotBlank
     private String lastName;
 
-
-    @NotBlank
     @Email
     private String email;
 
-    @NotBlank
     private String password;
 }

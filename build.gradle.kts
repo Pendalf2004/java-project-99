@@ -40,10 +40,25 @@ jacoco {
 
 
 dependencies {
+
+
+
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-devtools")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.springframework.boot:spring-boot-starter-security:3.4.1")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
+	implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+	implementation("org.mapstruct:mapstruct:1.6.3")
+	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+
+	implementation ("org.springframework.boot:spring-boot-starter-data-r2dbc")
 	implementation("com.h2database:h2:2.2.220")
+	implementation("jakarta.jms:jakarta.jms-api:3.1.0")
 	implementation("org.postgresql:postgresql:42.2.5")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -51,16 +66,6 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.assertj:assertj-core:3.25.3")
 	testImplementation(platform("org.junit:junit-bom:5.11.0-M1"))
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
-
-//	implementation("org.jacoco:jacoco-maven-plugin:0.8.12")
-//	implementation("org.apache.maven.reporting:maven-reporting-api:4.0.0")
-
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-
-	implementation("org.openapitools:jackson-databind-nullable:0.2.6")
-	implementation("org.mapstruct:mapstruct:1.6.3")
-	annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
 }
 
 sourceSets {

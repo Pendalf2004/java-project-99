@@ -1,5 +1,7 @@
 package hexlet.code.app.mapper;
 
+import hexlet.code.app.DTO.User.CreateUserDTO;
+import hexlet.code.app.DTO.User.UpdateUserDTO;
 import hexlet.code.app.DTO.User.UserDTO;
 import hexlet.code.app.model.User;
 import org.mapstruct.*;
@@ -13,11 +15,13 @@ import org.mapstruct.*;
 
 public abstract class UserMapper {
 
-    @Mapping(target = "password", ignore = true)
     public abstract UserDTO map(User model);
 
-    @Mapping(target = "email", source = "username")
     public abstract User map(UserDTO model);
+
+    public abstract User map(CreateUserDTO model);
+
+    public abstract void update(@MappingTarget User destination, UpdateUserDTO update);
 
 
 }
