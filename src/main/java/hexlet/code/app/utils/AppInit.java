@@ -1,9 +1,13 @@
 package hexlet.code.app.utils;
 
 
-import hexlet.code.app.DTO.User.CreateUserDTO;
+import hexlet.code.app.DTO.user.CreateUserDTO;
 import hexlet.code.app.mapper.UserMapper;
+import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.model.User;
+import hexlet.code.app.repository.LabelRepository;
+import hexlet.code.app.repository.TaskRepository;
+import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
 import lombok.AllArgsConstructor;
 
@@ -19,63 +23,53 @@ public class AppInit implements ApplicationRunner {
     @Autowired
     private final UserRepository userRepository;
 
-//    @Autowired
-//    private final TaskStatusRepository statusRepository;
-//
-//    @Autowired
-//    private final LabelRepository labelRepository;
-//
-//    @Autowired
-//    private final TaskRepository taskRepository;
+    @Autowired
+    private final TaskStatusRepository statusRepository;
+
+    @Autowired
+    private final LabelRepository labelRepository;
+
+    @Autowired
+    private final TaskRepository taskRepository;
 
     @Autowired
     private final UserMapper mapper;
 
-//    @Override
-//    public void run(ApplicationArguments args) throws Exception {
-//        dbCleanup();
-//        setAdmin();
-//    }
-
     public void run(ApplicationArguments args) throws Exception {
-        var email = "hexlet@example.com";
-        var userData = new User();
-        userData.setEmail(email);
-        userData.setPassword("qwerty");
-        userRepository.save(userData);
+        init();
+    }
+
+    public void init() {
+        dbCleanup();
+        setAdmin();
+        setTaskStatuses();
     }
 
     private void setAdmin() {
         CreateUserDTO createData = new CreateUserDTO();
         createData.setEmail("hexlet@example.com");
         createData.setPassword("qwerty");
+        createData.setLastName("admin");
+        createData.setFirstName("admin");
         User user = mapper.map(createData);
         userRepository.save(user);
     }
 
-//    private void initTaskStatuses(String[] defaults) {
-//        for (var str : defaults) {
-//            var status = new TaskStatus();
-//            status.setName(str);
-//            status.setSlug(str);
-//            statusRepository.save(status);
-//        }
-//    }
-//
-//    private void initLabels(String[] defaults) {
-//        for (var l : defaults) {
-//            var label = new Label();
-//            label.setName(l);
-//            labelRepository.save(label);
-//        }
-//    }
-
-    private void dbCleanup() {
-//        taskRepository.deleteAll();
-        userRepository.deleteAll();
-//        labelRepository.deleteAll();
-//        statusRepository.deleteAll();
+    private void setTaskStatuses() {
+        var statuses = new String[]
+                {"draft", "to_review", "to_be_fixed", "to_publish", "published"};
+        for (var status : statuses) {
+            var taskStatus = new TaskStatus();
+            taskStatus.setName(status);
+            taskStatus.setSlug(status);
+            statusRepository.save(taskStatus);
+        }
     }
 
-
+    private void dbCleanup() {
+        taskRepository.deleteAll();
+        userRepository.deleteAll();
+        labelRepository.deleteAll();
+        statusRepository.deleteAll();
+    }
 }

@@ -60,5 +60,4 @@ public class User implements BaseModel, UserDetails {
     public String getUsername() {
         return this.email;
     }
-
 }

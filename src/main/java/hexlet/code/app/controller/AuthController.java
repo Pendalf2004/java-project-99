@@ -3,6 +3,7 @@ package hexlet.code.app.controller;
 import hexlet.code.app.model.Authentication;
 import hexlet.code.app.utils.JWTUtils;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,11 +27,11 @@ public class AuthController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public String login(@RequestBody Authentication data) {
+    public String login(@Valid @RequestBody Authentication authPair) {
         var authorize = new UsernamePasswordAuthenticationToken(
-                data.getEmail(), data.getPassword());
+                authPair.getEmail(), authPair.getPassword());
         manager.authenticate(authorize);
 
-        return utils.generateToken(data.getEmail());
+        return utils.generateToken(authPair.getEmail());
     }
 }

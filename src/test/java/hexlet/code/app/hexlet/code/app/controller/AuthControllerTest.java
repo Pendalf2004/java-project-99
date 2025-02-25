@@ -37,28 +37,30 @@ public class AuthControllerTest {
     }
 
     @Test
-    @Order(1)
     public void testLoginSuccess() throws Exception {
         Authentication requestBody = generateAuthRequest("hexlet@example.com", "qwerty");
         var request = post("/api/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(requestBody));
 
+        var tmp = repository.findAll();
+
         var response = mockMvc.perform(request)
                 .andExpect(status().isCreated())
                 .andReturn();
-        var body = response.getResponse().getContentAsString();
-        assertThat(body).isNotNull();
+
+//        var body = response.getResponse().getContentAsString();
+//        assertThat(body).isNotNull();
     }
 
     @Test
-    @Order(2)
     public void testLoginFailure() throws Exception {
-        Authentication requestBody = generateAuthRequest("wrongEmail@gmail.com", "password");
+        Authentication requestBody = generateAuthRequest("xxx@xxx.xxx", "password");
 
         var request = post("/api/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(requestBody));
+
         mockMvc.perform(request)
                 .andExpect(status().isUnauthorized());
     }

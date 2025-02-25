@@ -1,4 +1,4 @@
-package hexlet.code.app.DTO.User;
+package hexlet.code.app.DTO.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,16 +9,12 @@ import lombok.Setter;
 @Setter
 public class CreateUserDTO {
 
-    private String firstName;
-
+    private String  firstName;
     @NotBlank
-    private String lastName;
-
-
+    private String  lastName;
     @NotBlank
     @Email
-    private String email;
-
+    private String  email;
     @NotBlank
-    private String password;
+    private String  password;
 }

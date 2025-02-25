@@ -65,6 +65,9 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.assertj:assertj-core:3.25.3")
+	testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.7")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
 	testImplementation(platform("org.junit:junit-bom:5.11.0-M1"))
 }
 
