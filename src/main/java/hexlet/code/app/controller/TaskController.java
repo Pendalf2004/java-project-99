@@ -11,7 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -30,16 +39,16 @@ public class TaskController {
                                                 @RequestParam(defaultValue = "100") Integer pageSize) {
         var spec = specification.build(taskParamsDTO);
         var pageable = PageRequest.of(page - 1, pageSize);
-        var result = utils.getAll((TaskFilterSpecDTO) spec, pageable);
+        var result = utils.getAll(spec, pageable);
         return ResponseEntity.ok()
                 .header("X-Total-Count",
-                        String.valueOf(utils.getAll((TaskFilterSpecDTO) spec,
+                        String.valueOf(utils.getAll(spec,
                                 PageRequest.of(0, Integer.MAX_VALUE)).size()))
                 .body(result);
     }
 
     @GetMapping("/{id}")
-    public TaskDTO getById(@PathVariable Long id) {
+    public TaskDTO show(@PathVariable Long id) {
         return utils.getById(id);
     }
 
@@ -51,7 +60,7 @@ public class TaskController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TaskDTO updateById(@Valid @RequestBody UpdateTaskDTO updateData, @PathVariable Long id) {
+    public TaskDTO update(@Valid @RequestBody UpdateTaskDTO updateData, @PathVariable Long id) {
         return utils.update(id, updateData);
     }
 

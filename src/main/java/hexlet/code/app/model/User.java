@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,17 +25,14 @@ import java.util.Collection;
 @Table(name = "users")
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User implements BaseModel, UserDetails {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(unique = true)
     @Email
-    @EqualsAndHashCode.Include
     private String email;
 
     private String firstName;

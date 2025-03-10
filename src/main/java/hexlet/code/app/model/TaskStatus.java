@@ -1,9 +1,13 @@
 package hexlet.code.app.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -16,19 +20,16 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-@ToString(onlyExplicitlyIncluded = true)
-public class TaskStatus implements BaseModel{
+public class TaskStatus implements BaseModel {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private long id;
 
     @Column(unique = true, nullable = false)
-    @ToString.Include
     private String name;
 
     @Column(unique = true, nullable = false)
-    @ToString.Include
     private String slug;
 
     @CreatedDate

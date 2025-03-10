@@ -1,7 +1,13 @@
 package hexlet.code.app.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +28,7 @@ public class Label {
     private long        id;
 
     @Column(unique = true, columnDefinition = "TEXT")
+    @NotBlank
     private String      name;
 
     @CreatedDate

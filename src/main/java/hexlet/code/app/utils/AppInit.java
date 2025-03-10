@@ -2,13 +2,13 @@ package hexlet.code.app.utils;
 
 
 import hexlet.code.app.DTO.user.CreateUserDTO;
-import hexlet.code.app.mapper.UserMapper;
+import hexlet.code.app.model.Label;
 import hexlet.code.app.model.TaskStatus;
-import hexlet.code.app.model.User;
 import hexlet.code.app.repository.LabelRepository;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import hexlet.code.app.repository.UserRepository;
+import hexlet.code.app.services.UserUtils;
 import lombok.AllArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +27,13 @@ public class AppInit implements ApplicationRunner {
     private final TaskStatusRepository statusRepository;
 
     @Autowired
+    private final UserUtils userUtils;
+
+    @Autowired
     private final LabelRepository labelRepository;
 
     @Autowired
     private final TaskRepository taskRepository;
-
-    @Autowired
-    private final UserMapper mapper;
 
     public void run(ApplicationArguments args) throws Exception {
         init();
@@ -43,6 +43,7 @@ public class AppInit implements ApplicationRunner {
         dbCleanup();
         setAdmin();
         setTaskStatuses();
+        setLabels();
     }
 
     private void setAdmin() {
@@ -51,8 +52,17 @@ public class AppInit implements ApplicationRunner {
         createData.setPassword("qwerty");
         createData.setLastName("admin");
         createData.setFirstName("admin");
-        User user = mapper.map(createData);
-        userRepository.save(user);
+        userUtils.add(createData);
+    }
+
+    private void setLabels() {
+        var labels = new String[]
+                {"bug", "feature"};
+        for (var label : labels) {
+            var setLabel = new Label();
+            setLabel.setName(label);
+            labelRepository.save(setLabel);
+        }
     }
 
     private void setTaskStatuses() {

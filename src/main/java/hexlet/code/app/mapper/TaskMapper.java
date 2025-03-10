@@ -8,8 +8,16 @@ import hexlet.code.app.DTO.task.TaskDTO;
 import hexlet.code.app.DTO.task.UpdateTaskDTO;
 import hexlet.code.app.model.Label;
 import hexlet.code.app.model.Task;
+import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.repository.LabelRepository;
-import org.mapstruct.*;
+import hexlet.code.app.repository.TaskStatusRepository;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
@@ -24,6 +32,9 @@ import java.util.stream.Collectors;
 )
 public abstract class TaskMapper {
     @Autowired
+    private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
     private LabelRepository labelRepository;
 
     @Autowired
@@ -31,7 +42,7 @@ public abstract class TaskMapper {
 
     @Mapping(target = "name", source = "title")
     @Mapping(target = "description", source = "content")
-    @Mapping(target = "taskStatus", source = "status")
+    @Mapping(source = "status", target = "taskStatus", qualifiedByName = "slugToTaskStatus")
     @Mapping(target = "assignee", source = "assigneeId")
     @Mapping(target = "labels", source = "taskLabelIds", qualifiedByName = "idToLabel")
     public abstract Task map(CreateTaskDTO dto);
@@ -52,10 +63,17 @@ public abstract class TaskMapper {
 
     @Mapping(target = "name", source = "title")
     @Mapping(target = "description", source = "content")
-    @Mapping(target = "taskStatus", source = "status")
+    @Mapping(source = "status", target = "taskStatus", qualifiedByName = "slugToTaskStatus")
     @Mapping(target = "assignee", source = "assigneeId")
     @Mapping(target = "labels", source = "taskLabelIds", qualifiedByName = "idToLabel")
     public abstract void update(UpdateTaskDTO dto, @MappingTarget Task model);
+
+    @Named("slugToTaskStatus")
+    public TaskStatus slugToTaskStatus(String slug) {
+
+        return taskStatusRepository.findBySlug(slug).orElseThrow();
+    }
+
 
     @Named("labelToId")
     public Set<Long> labelToId(Set<Label> labels) {
@@ -72,5 +90,4 @@ public abstract class TaskMapper {
                 .map(Label::new)
                 .collect(Collectors.toSet());
     }
-
 }

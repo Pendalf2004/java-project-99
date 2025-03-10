@@ -1,12 +1,13 @@
 package hexlet.code.app.DTO.taskStatus;
 
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.openapitools.jackson.nullable.JsonNullable;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class UpdateTaskStatusDTO {
     @Size(min = 1)
     private String name;

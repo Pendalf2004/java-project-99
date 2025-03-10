@@ -8,20 +8,19 @@ import hexlet.code.app.exception.NotFoundException;
 import hexlet.code.app.mapper.LabelMapper;
 import hexlet.code.app.model.Label;
 import hexlet.code.app.repository.LabelRepository;
-import hexlet.code.app.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 
+@Service
 public class LabelUtils {
     @Autowired
     private LabelRepository repository;
 
-    @Autowired
-    private TaskRepository taskRepository;
+//    @Autowired
+//    private TaskRepository taskRepository;
 
     @Autowired
     private LabelMapper mapper;
@@ -32,7 +31,8 @@ public class LabelUtils {
     }
 
     public LabelDTO getById(Long id) {
-        Label label = repository.findById(id).orElseThrow(() -> new NotFoundException("Label with id " + id + " not found"));
+        Label label = repository.findById(id).orElseThrow(() ->
+                new NotFoundException("Label with id " + id + " not found"));
         return mapper.map(label);
     }
 
@@ -43,7 +43,8 @@ public class LabelUtils {
     }
 
     public LabelDTO update(Long id, UpdateLabelDTO updateData) {
-        Label label = repository.findById(id).orElseThrow(() -> new NotFoundException("Label with id " + id + " not found"));
+        Label label = repository.findById(id).orElseThrow(() ->
+                new NotFoundException("Label with id " + id + " not found"));
         mapper.update(updateData, label);
         repository.save(label);
         return mapper.map(label);

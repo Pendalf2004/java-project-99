@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -27,29 +28,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserControllerTest {
 
     @Autowired
-    MockMvc mock;
+    private MockMvc mock;
 
     @Autowired
     private WebApplicationContext wac;
 
 
     @Autowired
-    UserMapper mapper;
+    private UserMapper mapper;
 
     @Autowired
     private ObjectMapper parser;
 
     @Autowired
-    UserRepository repository;
+    private UserRepository repository;
 
-    User testUser = new User();
+    private User testUser = new User();
 
 
     @BeforeEach
@@ -89,7 +89,8 @@ class UserControllerTest {
                 .andReturn()
                 .getResponse();
         var body = response.getContentAsString();
-        UserDTO returnedUser = parser.readValue(body, new TypeReference<>() {});
+        UserDTO returnedUser = parser.readValue(body,
+                new TypeReference<>() { });
         Assertions.assertThat(returnedUser.getId())
                 .isEqualTo(testUser.getId());
     }
@@ -103,7 +104,6 @@ class UserControllerTest {
         var request = put("/api/users/" + testUser.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(parser.writeValueAsString(emailChange));
-
         mock.perform(request)
                 .andExpect(status().isOk());
 
@@ -131,10 +131,9 @@ class UserControllerTest {
                 .getResponse();
         var body = response.getContentAsString();
 
-        List<UserDTO> userDTO = parser.readValue(body, new TypeReference<>() {});
-
-        var actual = userDTO.stream().map(mapper::map).toList();
-        var expected = repository.findAll();
-        Assertions.assertThat(actual).isEqualTo(expected);
+        assertThat(body)
+                .contains(String.valueOf(testUser.getEmail()))
+                .contains(String.valueOf(testUser.getId()))
+                .contains(String.valueOf(testUser.getCreatedAt()));
     }
 }

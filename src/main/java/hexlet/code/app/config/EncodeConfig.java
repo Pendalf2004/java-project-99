@@ -26,7 +26,7 @@ public class EncodeConfig {
     }
 
     @Autowired
-    RsaKeys keys;
+    private RsaKeys keys;
 
     @Bean
     JwtEncoder jwtEncoder() {
@@ -39,5 +39,4 @@ public class EncodeConfig {
     JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withPublicKey(keys.getPublicKey()).build();
     }
-
 }

@@ -6,13 +6,11 @@ import hexlet.code.app.DTO.taskStatus.UpdateTaskStatusDTO;
 import hexlet.code.app.exception.InUseException;
 import hexlet.code.app.exception.NotFoundException;
 import hexlet.code.app.mapper.TaskStatusMapper;
-import hexlet.code.app.model.Task;
 import hexlet.code.app.model.TaskStatus;
 import hexlet.code.app.repository.TaskRepository;
 import hexlet.code.app.repository.TaskStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

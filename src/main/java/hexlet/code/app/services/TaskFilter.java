@@ -34,5 +34,4 @@ public class TaskFilter {
         return ((root, query, cb) -> titleCont == null ? cb.conjunction()
                 : cb.like(cb.lower(root.get("name")), "%" + titleCont + "%"));
     }
-
 }

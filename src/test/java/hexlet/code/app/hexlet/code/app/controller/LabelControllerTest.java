@@ -1,14 +1,15 @@
 package hexlet.code.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.app.DTO.task.CreateTaskDTO;
-import hexlet.code.app.DTO.task.UpdateTaskDTO;
+import hexlet.code.app.DTO.label.CreateLabelDTO;
+import hexlet.code.app.DTO.label.UpdateLabelDTO;
 import hexlet.code.app.DTO.user.CreateUserDTO;
-import hexlet.code.app.mapper.TaskMapper;
+import hexlet.code.app.mapper.LabelMapper;
 import hexlet.code.app.mapper.UserMapper;
-import hexlet.code.app.model.Task;
+import hexlet.code.app.model.Label;
 import hexlet.code.app.model.User;
-import hexlet.code.app.services.TaskUtils;
+import hexlet.code.app.repository.LabelRepository;
+import hexlet.code.app.services.LabelUtils;
 import hexlet.code.app.services.UserUtils;
 import hexlet.code.app.utils.AppInit;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,10 +20,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class TaskControllerTest {
+class LabelControllerTest {
 
     @Autowired
     private ObjectMapper om;
@@ -47,22 +48,26 @@ class TaskControllerTest {
     private UserUtils userUtils;
 
     @Autowired
-    private TaskUtils taskUtils;
-
-    @Autowired
-    private TaskMapper taskMapper;
-
-    @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private LabelRepository labelRepository;
+
+    @Autowired
+    private LabelMapper labelMapper;
+
+    @Autowired
+    private LabelUtils labelUtils;
 
     private User testUser;
 
-    private Task testTask;
+    private Label testLabel;
 
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
 
     @BeforeEach
     void setUp() {
+
         app.init();
 
         var createUser = new CreateUserDTO();
@@ -74,83 +79,91 @@ class TaskControllerTest {
         testUser = userMapper.map(userUtils.getByEmail(createUser.getEmail()));
 
         token = jwt().jwt(b -> b.subject(testUser.getEmail()));
-        var createTask = new CreateTaskDTO();
-        createTask.setContent("content");
-        createTask.setTitle("title");
-        createTask.setStatus("published");
-        taskUtils.add(createTask);
 
-        testTask = taskMapper.map(taskUtils.getAll().getFirst());
+        var createLabel = new CreateLabelDTO();
+        createLabel.setName("test");
+        labelUtils.add(createLabel);
+
+        testLabel = labelMapper.map(labelUtils.getAll().getFirst());
     }
 
     @Test
     public void show() throws Exception {
-        MvcResult response = mockMvc.perform(get("/api/tasks/" + testTask.getId()).with(token))
+        var response = mockMvc.perform(get("/api/labels/" + testLabel.getId())
+                        .with(token))
                 .andExpect(status().isOk())
-                .andReturn();
-        String body = response.getResponse().getContentAsString();
-
-        assertThatJson(body).and(
-                task -> task.node("title").isEqualTo(testTask.getName()),
-                task -> task.node("status").isEqualTo(testTask.getTaskStatus().getSlug())
+                .andReturn().getResponse();
+        assertThatJson(response.getContentAsString()).and(
+                v -> v.node("name").isEqualTo(testLabel.getName())
         );
     }
 
     @Test
     public void index() throws Exception {
-        var response = mockMvc.perform(get("/api/tasks").with(token))
+        var response = mockMvc.perform(get("/api/labels")
+                        .with(token))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
-
-        assertThat(response)
-                .contains(String.valueOf(testTask.getAssignee().getId()))
-                .contains(testTask.getName())
-                .contains(testTask.getDescription())
-                .contains(testTask.getTaskStatus().getSlug());
+        assertThat(response).contains(testLabel.getName());
     }
 
     @Test
-    public void update() throws Exception {
-        var updateData = new UpdateTaskDTO();
-        updateData.setTitle("new title");
+    public void create() throws Exception {
+        var createData = new CreateLabelDTO();
+        createData.setName("new label");
 
-        mockMvc.perform(put("/api/tasks/" + testTask.getId())
+        mockMvc.perform(post("/api/labels")
+                        .with(token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsString(createData)))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        var label = labelRepository.findByName(createData.getName()).orElseThrow();
+        assertThat(label.getName()).isEqualTo(createData.getName());
+    }
+
+    @Test
+    public void updateTest() throws Exception {
+        var updateData = new UpdateLabelDTO();
+        updateData.setName("update label");
+
+        mockMvc.perform(put("/api/labels/" + testLabel.getId())
                         .with(token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(om.writeValueAsString(updateData)))
-                .andReturn().getResponse().getContentAsString();
+                .andExpect(status().isOk());
 
-        var updatedTask = taskUtils.getById(testTask.getId());
-
-        assertThat(updatedTask.getTitle()).isEqualTo(updateData.getTitle());
+        assertThat(labelRepository.findByName(updateData.getName())).isPresent();
     }
 
     @Test
     public void deleteTest() throws Exception {
-        mockMvc.perform(delete("/api/tasks/" + testTask.getId())
+
+        mockMvc.perform(delete("/api/labels/" + testLabel.getId())
                         .with(token))
                 .andExpect(status().isNoContent())
                 .andReturn().getResponse();
-        assertThat(taskUtils.getAll().isEmpty());
+        assertFalse(labelRepository.findByName(testLabel.getName()).isPresent());
     }
 
     @Test
-    public void unauthorized() throws Exception {
-        mockMvc.perform(get("/api/tasks"))
+    public void unauthorizedTest() throws Exception {
+        mockMvc.perform(get("/api/labels"))
                 .andExpect(status().isUnauthorized());
 
-        mockMvc.perform(post("/api/tasks")
+        mockMvc.perform(post("/api/labels")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
 
-        mockMvc.perform(put("/api/tasks/" + testTask.getId())
+        mockMvc.perform(put("/api/labels/" + testLabel.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
 
-        mockMvc.perform(get("/api/tasks/" + testTask.getId()))
+        mockMvc.perform(get("/api/labels/" + testLabel.getId()))
                 .andExpect(status().isUnauthorized());
 
-        mockMvc.perform(delete("/api/tasks/" + testTask.getId()))
+        mockMvc.perform(delete("/api/labels/" + testLabel.getId()))
                 .andExpect(status().isUnauthorized());
     }
 }

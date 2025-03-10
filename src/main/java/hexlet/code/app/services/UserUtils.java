@@ -56,13 +56,22 @@ public class UserUtils {
     public UserDTO add(CreateUserDTO createData) {
         User user = mapper.map(createData);
         var hashedPass = hash(createData.getPassword());
-        createData.setPassword(hashedPass);
+        user.setPassword(hashedPass);
         repository.save(user);
         return mapper.map(user);
     }
 
     public UserDTO update(Long id, UpdateUserDTO updateData) {
-        User user = repository.findById(id).orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
+        User user = repository.findById(id).orElseThrow(() ->
+                new NotFoundException("User with id " + id + " not found"));
+        String pass = user.getPassword();
+        try {
+            pass = hash(updateData.getPassword());
+        } catch (NullPointerException | IllegalArgumentException e) {
+
+        } finally {
+            user.setPassword(pass);
+        }
         mapper.update(user, updateData);
         repository.save(user);
         return mapper.map(user);
@@ -79,5 +88,4 @@ public class UserUtils {
     public UserDTO getByEmail(String email) {
         return mapper.map(repository.findByEmail(email).get());
     }
-
 }

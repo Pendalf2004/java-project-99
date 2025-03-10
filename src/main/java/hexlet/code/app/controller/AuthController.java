@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,18 +21,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     @Autowired
-    JWTUtils utils;
+    private JWTUtils utils;
 
     @Autowired
-    AuthenticationManager manager;
+    private AuthenticationManager manager;
+
+    @Autowired
+    private PasswordEncoder encoder;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public String login(@Valid @RequestBody Authentication authPair) {
-        var authorize = new UsernamePasswordAuthenticationToken(
-                authPair.getEmail(), authPair.getPassword());
+        UsernamePasswordAuthenticationToken authorize;
+        authorize = new UsernamePasswordAuthenticationToken(
+                authPair.getUsername(), authPair.getPassword());
         manager.authenticate(authorize);
 
-        return utils.generateToken(authPair.getEmail());
+        return utils.generateToken(authPair.getUsername());
     }
 }
