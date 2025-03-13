@@ -2,10 +2,11 @@ package hexlet.code.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.DTO.user.CreateUserDTO;
 import hexlet.code.DTO.user.UserDTO;
 import hexlet.code.mapper.UserMapper;
-import hexlet.code.model.User;
 import hexlet.code.repository.UserRepository;
+import hexlet.code.services.UserUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +50,10 @@ class UserControllerTest {
     @Autowired
     private UserRepository repository;
 
-    private User testUser = new User();
+    @Autowired
+    private UserUtils utils;
+
+    private CreateUserDTO createData = new CreateUserDTO();
 
 
     @BeforeEach
@@ -58,10 +62,10 @@ class UserControllerTest {
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .build();
 
-        testUser.setEmail("ya@ya.ya");
-        testUser.setFirstName("Ivan");
-        testUser.setLastName("Ivanov");
-        testUser.setPassword("password");
+        createData.setEmail("ya@ya.ya");
+        createData.setFirstName("Ivan");
+        createData.setLastName("Ivanov");
+        createData.setPassword("password");
 
     }
 
@@ -72,19 +76,21 @@ class UserControllerTest {
 
     @Test
     void create() throws Exception {
+
         var request = post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(parser.writeValueAsString(testUser));
+                .content(parser.writeValueAsString(createData));
         mock.perform(request)
                 .andExpect(status().isCreated());
-        Assertions.assertThat(repository.findByEmail(testUser.getEmail())).isNotEmpty();
+        Assertions.assertThat(repository.findByEmail(createData.getEmail())).isNotEmpty();
 
     }
 
     @Test
     void show() throws Exception {
-        repository.save(testUser);
-        var response = mock.perform(get("/api/users/" + testUser.getId()))
+        utils.add(createData);
+        var user = utils.getByEmail(createData.getEmail());
+        var response = mock.perform(get("/api/users/" + user.getId()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -92,30 +98,33 @@ class UserControllerTest {
         UserDTO returnedUser = parser.readValue(body,
                 new TypeReference<>() { });
         Assertions.assertThat(returnedUser.getId())
-                .isEqualTo(testUser.getId());
+                .isEqualTo(user.getId());
     }
 
     @Test
     void update() throws Exception {
-        repository.save(testUser);
+        utils.add(createData);
+        var user = utils.getByEmail(createData.getEmail());
         var emailChange = new HashMap<>();
         emailChange.put("email", "ivan@google.com");
 
-        var request = put("/api/users/" + testUser.getId())
+        var request = put("/api/users/" + user.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(parser.writeValueAsString(emailChange));
         mock.perform(request)
                 .andExpect(status().isOk());
 
-        var updatedUser = repository.findById(testUser.getId()).get();
+        var updatedUser = repository.findById(user.getId()).get();
         Assertions.assertThat(updatedUser.getEmail()).isEqualTo(("ivan@google.com"));
     }
 
     @Test
     void delete() throws Exception {
-        repository.save(testUser);
+        utils.add(createData);
+        var user = utils.getByEmail(createData.getEmail());
+
         if (!repository.findAll().isEmpty()) {
-            var userId = repository.findByEmail(testUser.getEmail()).get().getId();
+            var userId = repository.findByEmail(createData.getEmail()).get().getId();
             mock.perform(MockMvcRequestBuilders.delete("/api/users/" + userId))
                     .andExpect(status().isNoContent());
             Assertions.assertThat(repository.findAll()).isEmpty();
@@ -124,7 +133,9 @@ class UserControllerTest {
 
     @Test
     void index() throws Exception {
-        repository.save(testUser);
+        utils.add(createData);
+        var user = utils.getByEmail(createData.getEmail());
+
         var response = mock.perform(get("/api/users"))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -132,8 +143,8 @@ class UserControllerTest {
         var body = response.getContentAsString();
 
         assertThat(body)
-                .contains(String.valueOf(testUser.getEmail()))
-                .contains(String.valueOf(testUser.getId()))
-                .contains(String.valueOf(testUser.getCreatedAt()));
+                .contains(String.valueOf(user.getEmail()))
+                .contains(String.valueOf(user.getId()))
+                .contains(String.valueOf(user.getCreatedAt()));
     }
 }
