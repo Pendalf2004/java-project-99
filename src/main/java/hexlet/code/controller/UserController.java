@@ -4,10 +4,12 @@ import hexlet.code.DTO.user.CreateUserDTO;
 import hexlet.code.DTO.user.UpdateUserDTO;
 import hexlet.code.DTO.user.UserDTO;
 import hexlet.code.services.UserUtils;
+import hexlet.code.utils.AuthUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +29,9 @@ public class UserController {
     @Autowired
     private UserUtils utils;
 
+    @Autowired
+    private AuthUtils auth;
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDTO create(@Valid @RequestBody CreateUserDTO createData) {
@@ -40,12 +45,15 @@ public class UserController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+//    @PreAuthorize("auth.isAuthorized(#id)")
     public UserDTO update(@Valid @RequestBody UpdateUserDTO updateData, @PathVariable Long id) {
+        System.out.println();
         return utils.update(id, updateData);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @PreAuthorize("auth.isAuthorized(#id)")
     public void delete(@PathVariable Long id) {
         utils.delete(id);
     }

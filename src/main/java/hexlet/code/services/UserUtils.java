@@ -88,4 +88,5 @@ public class UserUtils {
     public UserDTO getByEmail(String email) {
         return mapper.map(repository.findByEmail(email).get());
     }
+
 }

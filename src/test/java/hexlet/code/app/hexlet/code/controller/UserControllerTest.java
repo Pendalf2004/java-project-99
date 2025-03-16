@@ -15,17 +15,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -55,6 +59,8 @@ class UserControllerTest {
 
     private CreateUserDTO createData = new CreateUserDTO();
 
+    private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
+
 
     @BeforeEach
     public void setUp() {
@@ -66,7 +72,6 @@ class UserControllerTest {
         createData.setFirstName("Ivan");
         createData.setLastName("Ivanov");
         createData.setPassword("password");
-
     }
 
     @AfterEach
@@ -105,17 +110,34 @@ class UserControllerTest {
     void update() throws Exception {
         utils.add(createData);
         var user = utils.getByEmail(createData.getEmail());
-        var emailChange = new HashMap<>();
-        emailChange.put("email", "ivan@google.com");
 
-        var request = put("/api/users/" + user.getId())
+        token = jwt().jwt(b -> b.subject(user.getEmail()));
+        var data = new HashMap<String, String>();
+        data.put("firstName", "New name");
+
+        var request = put("/api/users/{id}", user.getId())
+                .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(parser.writeValueAsString(emailChange));
-        mock.perform(request)
-                .andExpect(status().isOk());
+                .content(parser.writeValueAsString(data));
+
+            var result = mock.perform(request)
+                    .andExpect(status().isOk())
+                    .andReturn();
+            var body = result.getResponse().getContentAsString();
+        assertThatJson(body).and(
+                v -> v.node("email").isEqualTo(user.getEmail()),
+                v -> v.node("firstName").isEqualTo(data.get("firstName")),
+                v -> v.node("lastName").isEqualTo(user.getLastName())
+        );
+
+        var actualUser = utils.getByEmail(user.getEmail());
+
+        assertEquals(data.get("firstName"), actualUser.getFirstName());
+        assertEquals(user.getLastName(), actualUser.getLastName());
+        assertEquals(user.getEmail(), actualUser.getEmail());
 
         var updatedUser = repository.findById(user.getId()).get();
-        Assertions.assertThat(updatedUser.getEmail()).isEqualTo(("ivan@google.com"));
+        Assertions.assertThat(updatedUser.getEmail()).isEqualTo((user.getEmail()));
     }
 
     @Test
