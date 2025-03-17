@@ -49,14 +49,14 @@ public abstract class TaskMapper {
 
     @Mapping(target = "title", source = "name")
     @Mapping(target = "content", source = "description")
-    @Mapping(target = "status", source = "taskStatus.slug")
+    @Mapping(target = "status", source = "taskStatus")
     @Mapping(target = "assigneeId", source = "assignee.id")
     @Mapping(target = "taskLabelIds", source = "labels", qualifiedByName = "labelToId")
     public abstract TaskDTO map(Task model);
 
     @Mapping(target = "name", source = "title")
     @Mapping(target = "description", source = "content")
-    @Mapping(target = "taskStatus.slug", source = "status")
+    @Mapping(target = "taskStatus", source = "status")
     @Mapping(target = "assignee.id", source = "assigneeId")
     @Mapping(target = "labels", source = "taskLabelIds", qualifiedByName = "idToLabel")
     public abstract Task map(TaskDTO model);
@@ -70,7 +70,6 @@ public abstract class TaskMapper {
 
     @Named("slugToTaskStatus")
     public TaskStatus slugToTaskStatus(String slug) {
-
         return taskStatusRepository.findBySlug(slug).orElseThrow();
     }
 

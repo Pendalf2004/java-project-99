@@ -1,5 +1,6 @@
 package hexlet.code.DTO.task;
 
+import hexlet.code.model.TaskStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,23 @@ public class TaskDTO {
 //    @JsonProperty("assignee_id")
     private long        assigneeId;
     private String      content;
-    private String      status;
+    private TaskStatus  status;
     private Set<Long>   taskLabelIds = new HashSet<>();
+
+//    public String getName() {
+//        return this.title;
+//    }
+//
+//    public String getDescription() {
+//        return this.content;
+//    }
+//
+//    public String getTaskStatus() {
+//        return this.status;
+//    }
+//
+//    public Set getLabels() {
+//        return this.taskLabelIds;
+//    }
+
 }

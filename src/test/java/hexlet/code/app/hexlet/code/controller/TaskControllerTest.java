@@ -16,10 +16,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import java.util.HashMap;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,6 +87,37 @@ class TaskControllerTest {
     }
 
     @Test
+    public void testUpdate() throws Exception {
+        var task = taskUtils.getById(testTask.getId());
+        var data = new HashMap<String, String>();
+        var name = "New Task Name";
+        data.put("title", name);
+
+        var request = put("/api/tasks/{id}", task.getId()).with(token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsString(data));
+        var result = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+        var body = result.getResponse().getContentAsString();
+
+        assertThatJson(body).and(
+                v -> v.node("content").isEqualTo(testTask.getDescription()),
+                v -> v.node("title").isEqualTo(data.get("title")),
+                v -> v.node("status").isEqualTo(testTask.getTaskStatus()),
+                v -> v.node("taskLabelIds").isEqualTo(testTask.getLabels())
+        );
+
+        var actualTask = taskMapper.map(taskUtils.getAll().stream()
+                .findFirst().get());
+
+        assertEquals(name, actualTask.getName());
+        assertEquals(testTask.getDescription(), actualTask.getDescription());
+        assertEquals(testTask.getTaskStatus(), actualTask.getTaskStatus());
+        assertEquals(testTask.getLabels(), actualTask.getLabels());
+    }
+
+    @Test
     public void show() throws Exception {
         MvcResult response = mockMvc.perform(get("/api/tasks/" + testTask.getId()).with(token))
                 .andExpect(status().isOk())
@@ -92,7 +126,7 @@ class TaskControllerTest {
 
         assertThatJson(body).and(
                 task -> task.node("title").isEqualTo(testTask.getName()),
-                task -> task.node("status").isEqualTo(testTask.getTaskStatus().getSlug())
+                task -> task.node("status").isEqualTo(testTask.getTaskStatus())
         );
     }
 
