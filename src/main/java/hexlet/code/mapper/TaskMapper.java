@@ -70,6 +70,9 @@ public abstract class TaskMapper {
 
     @Named("slugToTaskStatus")
     public TaskStatus slugToTaskStatus(String slug) {
+        var tmp = taskStatusRepository.findBySlug(slug).orElseThrow();
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("\\[yyyy, MM, dd\\]");
+//        tmp.setCreatedAt(LocalDate.parse(tmp.getCreatedAt().format(formatter)));
         return taskStatusRepository.findBySlug(slug).orElseThrow();
     }
 
