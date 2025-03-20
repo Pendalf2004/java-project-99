@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: "jdbc:postgresql://dpg-cu4ujm56l47c73deoa7g-a:5432/hex_db_q1sg?password=eJZZ1SdbvfbUBX9Q5cJgh9Lp9m3Blel0&user=hex_db_q1sg_user"
+    url: "jdbc:postgresql://dpg-cve2ci3tq21c73eautlg-a:5432/hex_db_u1kb?password=Y9Q6OOpxmQwIxwmqVed3lCLSAimHYV4k&user=hex_db_q1sg_user"
     username: hex_db_q1sg_user
-    password: eJZZ1SdbvfbUBX9Q5cJgh9Lp9m3Blel0
+    password: Y9Q6OOpxmQwIxwmqVed3lCLSAimHYV4k
 
