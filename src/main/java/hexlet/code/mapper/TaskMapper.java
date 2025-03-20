@@ -20,6 +20,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,43 +43,44 @@ public abstract class TaskMapper {
 
     @Mapping(target = "name", source = "title")
     @Mapping(target = "description", source = "content")
-    @Mapping(source = "status", target = "taskStatus", qualifiedByName = "slugToTaskStatus")
+    @Mapping(target = "taskStatus", source = "status", qualifiedByName = "slugToTaskStatus")
     @Mapping(target = "assignee", source = "assigneeId")
     @Mapping(target = "labels", source = "taskLabelIds", qualifiedByName = "idToLabel")
     public abstract Task map(CreateTaskDTO dto);
 
     @Mapping(target = "title", source = "name")
     @Mapping(target = "content", source = "description")
-    @Mapping(target = "status", source = "taskStatus")
+    @Mapping(target = "status", source = "taskStatus.slug")
     @Mapping(target = "assigneeId", source = "assignee.id")
     @Mapping(target = "taskLabelIds", source = "labels", qualifiedByName = "labelToId")
     public abstract TaskDTO map(Task model);
 
     @Mapping(target = "name", source = "title")
     @Mapping(target = "description", source = "content")
-    @Mapping(target = "taskStatus", source = "status")
+    @Mapping(target = "taskStatus.slug", source = "status")
     @Mapping(target = "assignee.id", source = "assigneeId")
     @Mapping(target = "labels", source = "taskLabelIds", qualifiedByName = "idToLabel")
     public abstract Task map(TaskDTO model);
 
     @Mapping(target = "name", source = "title")
     @Mapping(target = "description", source = "content")
-    @Mapping(source = "status", target = "taskStatus", qualifiedByName = "slugToTaskStatus")
+    @Mapping(target = "taskStatus", source = "status", qualifiedByName = "slugToTaskStatus")
     @Mapping(target = "assignee", source = "assigneeId")
     @Mapping(target = "labels", source = "taskLabelIds", qualifiedByName = "idToLabel")
     public abstract void update(UpdateTaskDTO dto, @MappingTarget Task model);
 
     @Named("slugToTaskStatus")
     public TaskStatus slugToTaskStatus(String slug) {
-        var tmp = taskStatusRepository.findBySlug(slug).orElseThrow();
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("\\[yyyy, MM, dd\\]");
-//        tmp.setCreatedAt(LocalDate.parse(tmp.getCreatedAt().format(formatter)));
         return taskStatusRepository.findBySlug(slug).orElseThrow();
     }
 
 
     @Named("labelToId")
     public Set<Long> labelToId(Set<Label> labels) {
+        var tmp = labels == null ? null
+                : labels.stream()
+                .map(Label::getId)
+                .collect(Collectors.toSet());
         return labels == null ? null
                 : labels.stream()
                 .map(Label::getId)
@@ -87,9 +89,6 @@ public abstract class TaskMapper {
 
     @Named("idToLabel")
     public Set<Label> idToLabel(Set<Long> labelsIds) {
-        return labelsIds == null ? null
-                : labelsIds.stream()
-                .map(Label::new)
-                .collect(Collectors.toSet());
+        return labelsIds == null ? null : new HashSet<>(labelRepository.findAllById(labelsIds));
     }
 }

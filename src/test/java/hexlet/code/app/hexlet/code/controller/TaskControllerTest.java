@@ -1,13 +1,17 @@
 package hexlet.code.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.DTO.label.CreateLabelDTO;
 import hexlet.code.DTO.task.CreateTaskDTO;
 import hexlet.code.DTO.task.UpdateTaskDTO;
 import hexlet.code.DTO.user.CreateUserDTO;
+import hexlet.code.mapper.LabelMapper;
 import hexlet.code.mapper.TaskMapper;
 import hexlet.code.mapper.UserMapper;
+import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.User;
+import hexlet.code.services.LabelUtils;
 import hexlet.code.services.TaskUtils;
 import hexlet.code.services.UserUtils;
 import hexlet.code.utils.AppInit;
@@ -23,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,9 +63,17 @@ class TaskControllerTest {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private LabelUtils labelUtils;
+
+    @Autowired
+    private LabelMapper labelMapper;
+
     private User testUser;
 
     private Task testTask;
+
+    private Label testLabel;
 
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
 
@@ -76,11 +89,18 @@ class TaskControllerTest {
         userUtils.add(createUser);
         testUser = userMapper.map(userUtils.getByEmail(createUser.getEmail()));
 
+        CreateLabelDTO createLabelData = new CreateLabelDTO();
+        createLabelData.setName("test");
+        labelUtils.add(createLabelData);
+
+        testLabel = labelMapper.map(labelUtils.getAll().getFirst());
+
         token = jwt().jwt(b -> b.subject(testUser.getEmail()));
         var createTask = new CreateTaskDTO();
         createTask.setContent("content");
         createTask.setTitle("title");
         createTask.setStatus("published");
+        createTask.setTaskLabelIds(Set.of(testLabel.getId()));
         taskUtils.add(createTask);
 
         testTask = taskMapper.map(taskUtils.getAll().getFirst());
@@ -104,8 +124,8 @@ class TaskControllerTest {
         assertThatJson(body).and(
                 v -> v.node("content").isEqualTo(testTask.getDescription()),
                 v -> v.node("title").isEqualTo(data.get("title")),
-                v -> v.node("status").isEqualTo(testTask.getTaskStatus()),
-                v -> v.node("taskLabelIds").isEqualTo(testTask.getLabels())
+                v -> v.node("status").isEqualTo(testTask.getTaskStatus().getSlug()),
+                v -> v.node("taskLabelIds").isEqualTo(testTask.getLabels().stream().map(Label::getId))
         );
 
         var actualTask = taskMapper.map(taskUtils.getAll().stream()
@@ -126,7 +146,7 @@ class TaskControllerTest {
 
         assertThatJson(body).and(
                 task -> task.node("title").isEqualTo(testTask.getName()),
-                task -> task.node("status").isEqualTo(testTask.getTaskStatus())
+                task -> task.node("status").isEqualTo(testTask.getTaskStatus().getSlug())
         );
     }
 
@@ -167,6 +187,40 @@ class TaskControllerTest {
                 .andReturn().getResponse();
         assertThat(taskUtils.getAll().isEmpty());
     }
+
+    @Test
+    public void testCreate() throws Exception {
+        var name = "Task Name";
+        var content = "Task Content";
+        var data = new HashMap<String, Object>();
+        var createTask = new CreateTaskDTO();
+        createTask.setContent("content");
+        createTask.setTitle("title");
+        createTask.setStatus("published");
+        createTask.setTaskLabelIds(Set.of(testLabel.getId()));
+
+        data.put("title", name);
+        data.put("content", content);
+        data.put("status", createTask.getStatus());
+        data.put("taskLabelIds", createTask.getTaskLabelIds());
+
+        var request = post("/api/tasks").with(token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsString(data));
+        var result = mockMvc.perform(request)
+                .andExpect(status().isCreated())
+                .andReturn();
+        var body = result.getResponse().getContentAsString();
+
+        assertThatJson(body).and(
+                v -> v.node("id").isPresent(),
+                v -> v.node("content").isPresent(),
+                v -> v.node("title").isPresent(),
+                v -> v.node("status").isEqualTo(data.get("status")),
+                v -> v.node("taskLabelIds").isEqualTo(createTask.getTaskLabelIds())
+        );
+    }
+
 
     @Test
     public void unauthorized() throws Exception {

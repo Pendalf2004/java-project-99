@@ -17,4 +17,5 @@ public interface LabelRepository extends JpaRepository<Label, Long> {
             WHERE label_id = ?1
             """, nativeQuery = true)
     Set<Long> getIdFromCrossTable(Long id);
+
 }

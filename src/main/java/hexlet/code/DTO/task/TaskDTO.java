@@ -1,6 +1,6 @@
 package hexlet.code.DTO.task;
 
-import hexlet.code.model.TaskStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,10 +15,10 @@ public class TaskDTO {
     private int         index;
     private LocalDate   createdAt;
     private String      title;
-//    @JsonProperty("assignee_id")
+    @JsonProperty("assignee_id")
     private long        assigneeId;
     private String      content;
-    private TaskStatus  status;
+    private String      status;
     private Set<Long>   taskLabelIds = new HashSet<>();
 
 //    public String getName() {

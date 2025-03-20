@@ -1,5 +1,6 @@
 package hexlet.code.DTO.task;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,6 @@ public class UpdateTaskDTO {
 
     private Set<Long> taskLabelIds;
 
-//    @JsonProperty("assignee_id")
+    @JsonProperty("assignee_id")
     private Long      assigneeId;
 }
