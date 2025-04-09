@@ -1,7 +1,7 @@
 logging:
   level:
     root: warn
-    #org.springframework.security: trace
+    org.springframework.security: trace
 
 spring:
   profiles:
