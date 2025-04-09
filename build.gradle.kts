@@ -28,7 +28,7 @@ java {
 }
 
 application {
-	mainClass.set("hexlet/code/app/AppApplication")
+	mainClass.set("hexlet/code/AppApplication")
 }
 
 repositories {
@@ -63,9 +63,12 @@ dependencies {
 	implementation("com.h2database:h2:2.2.220")
 	implementation("jakarta.jms:jakarta.jms-api:3.1.0")
 	implementation("org.postgresql:postgresql:42.2.5")
+	implementation ("org.springframework:spring-web")
+	implementation ("org.springframework:spring-webmvc")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("org.springframework:spring-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.assertj:assertj-core:3.25.3")
