@@ -56,17 +56,17 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .build();
-    }
+//    @Bean
+//    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+//        return http.getSharedObject(AuthenticationManagerBuilder.class)
+//                .build();
+//    }
 
-    @Bean
-    public AuthenticationProvider daoAuthProvider(AuthenticationManagerBuilder auth) {
-        var provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userService);
-        provider.setPasswordEncoder(passwordEncoder);
-        return provider;
-    }
+//    @Bean
+//    public AuthenticationProvider daoAuthProvider(AuthenticationManagerBuilder auth) {
+//        var provider = new DaoAuthenticationProvider();
+//        provider.setUserDetailsService(userService);
+//        provider.setPasswordEncoder(passwordEncoder);
+//        return provider;
+//    }
 }
