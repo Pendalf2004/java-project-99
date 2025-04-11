@@ -36,26 +36,10 @@ jobs:
 
     - name: jacocoTestReport
       run: 	./gradlew jacocoTestReport 
-      
-    - name: Download Code Climate Test Reporter
-      run: |
-          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-          chmod +x ./cc-test-reporter
 
-           ls 
-           echo -=================================-
-           cd build/classes/java
-           ls
- 
-          
-    - name: Format coverage for Code Climate
-      run: |
-          ./cc-test-reporter format-coverage build/reports/jacoco/test/jacocoTestReport.xml -t jacoco
-      env:
-          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST}}
-          
-    - name: Upload coverage to Code Climate
-      run: |
-          ./cc-test-reporter upload-coverage
-      env:
-          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST}}
+    - name: Submit
+      uses: qltysh/qlty-action/coverage@main
+      with:
+        coverage-token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+        files: build/reports/jacoco/test/jacocoTestReport.xml
+      
