@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,15 +46,16 @@ public class UserController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-//    @PreAuthorize("auth.isAuthorized(#id)")
+    @PreAuthorize("#id == principal.id")
     public UserDTO update(@Valid @RequestBody UpdateUserDTO updateData, @PathVariable Long id) {
-        System.out.println();
+        //var authentication = SecurityContextHolder.getContext().getAuthentication();
+        //System.out.println("Principal: " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         return utils.update(id, updateData);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @PreAuthorize("auth.isAuthorized(#id)")
+    @PreAuthorize("auth.isAuthorized(#id)")
     public void delete(@PathVariable Long id) {
         utils.delete(id);
     }
