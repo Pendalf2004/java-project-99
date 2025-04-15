@@ -37,6 +37,14 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsService userService;
 
+    public SecurityConfig(JwtDecoder jwtDecoder,
+                          PasswordEncoder passwordEncoder,
+                          UserDetailsService userService) {
+        this.jwtDecoder = jwtDecoder;
+        this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector)
             throws Exception {
@@ -53,7 +61,8 @@ public class SecurityConfig {
                         .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/welcome")).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2ResourceServer((rs) -> rs.jwt((jwt) -> jwt.decoder(jwtDecoder)))
+                .oauth2ResourceServer((rs) ->
+                        rs.jwt((jwt) -> jwt.decoder(jwtDecoder)))
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }

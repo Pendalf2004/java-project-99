@@ -48,14 +48,12 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("#id == principal.id")
     public UserDTO update(@Valid @RequestBody UpdateUserDTO updateData, @PathVariable Long id) {
-        //var authentication = SecurityContextHolder.getContext().getAuthentication();
-        //System.out.println("Principal: " + SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         return utils.update(id, updateData);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("auth.isAuthorized(#id)")
+    @PreAuthorize("#id == principal.id")
     public void delete(@PathVariable Long id) {
         utils.delete(id);
     }

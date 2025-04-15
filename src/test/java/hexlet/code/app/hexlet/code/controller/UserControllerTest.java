@@ -63,6 +63,7 @@ class UserControllerTest {
 
     @BeforeEach
     public void setUp() {
+        repository.deleteAll();
         mock = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .build();
@@ -71,11 +72,6 @@ class UserControllerTest {
         createData.setFirstName("Ivan");
         createData.setLastName("Ivanov");
         createData.setPassword("password");
-    }
-
-    @AfterEach
-    public void clearRepo() {
-        repository.deleteAll();
     }
 
     @Test
