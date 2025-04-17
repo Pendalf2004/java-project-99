@@ -46,8 +46,10 @@ public class UserController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("#id == principal.id")
+//    @PreAuthorize("#id == principal.id")
+//    @PreAuthorize("@auth.isAuthorized(#id)")
     public UserDTO update(@Valid @RequestBody UpdateUserDTO updateData, @PathVariable Long id) {
+        auth.isAuthorized(id);
         return utils.update(id, updateData);
     }
 
