@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.DTO.user.CreateUserDTO;
 import hexlet.code.DTO.user.UserDTO;
 import hexlet.code.mapper.UserMapper;
+import hexlet.code.model.Authentication;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.services.UserUtils;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,6 @@ class UserControllerTest {
 
     @Autowired
     private WebApplicationContext wac;
-
 
     @Autowired
     private UserMapper mapper;
@@ -104,35 +103,48 @@ class UserControllerTest {
     @Test
     void update() throws Exception {
         utils.add(createData);
-        var user = utils.getByEmail(createData.getEmail());
+        var tmp = utils.getAll();
+        var objMapper = new ObjectMapper();
 
-        token = jwt().jwt(b -> b.subject(user.getEmail()));
+        Authentication requestBody = new Authentication();
+        requestBody.setUsername(createData.getEmail());
+        requestBody.setPassword(createData.getPassword());
+        var loginRequest = post("/api/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objMapper.writeValueAsString(requestBody));
+
+        var response = mock.perform(loginRequest)
+                .andReturn();
+
+        var body = response.getResponse().getContentAsString();
+
+        var token = jwt().jwt(b -> b.subject(createData.getEmail()));
         var data = new HashMap<String, String>();
         data.put("firstName", "New name");
 
-        var request = put("/api/users/{id}", user.getId())
-                .with(token)
+        var request = put("/api/users/{id}", utils.getByEmail(createData.getEmail()).getId())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(parser.writeValueAsString(data));
+                .content(parser.writeValueAsString(data))
+                .with(token);
 
             var result = mock.perform(request)
                     .andExpect(status().isOk())
                     .andReturn();
-            var body = result.getResponse().getContentAsString();
+            body = result.getResponse().getContentAsString();
         assertThatJson(body).and(
-                v -> v.node("email").isEqualTo(user.getEmail()),
+                v -> v.node("email").isEqualTo(createData.getEmail()),
                 v -> v.node("firstName").isEqualTo(data.get("firstName")),
-                v -> v.node("lastName").isEqualTo(user.getLastName())
+                v -> v.node("lastName").isEqualTo(createData.getLastName())
         );
 
-        var actualUser = utils.getByEmail(user.getEmail());
+        var actualUser = utils.getByEmail(createData.getEmail());
 
         assertEquals(data.get("firstName"), actualUser.getFirstName());
-        assertEquals(user.getLastName(), actualUser.getLastName());
-        assertEquals(user.getEmail(), actualUser.getEmail());
+        assertEquals(createData.getLastName(), actualUser.getLastName());
+        assertEquals(createData.getEmail(), actualUser.getEmail());
 
-        var updatedUser = repository.findById(user.getId()).get();
-        Assertions.assertThat(updatedUser.getEmail()).isEqualTo((user.getEmail()));
+        var updatedUser = repository.findById(utils.getByEmail(createData.getEmail()).getId()).get();
+        Assertions.assertThat(updatedUser.getEmail()).isEqualTo((createData.getEmail()));
     }
 
     @Test

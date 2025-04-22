@@ -13,8 +13,8 @@ public class AuthUtils {
 
     public boolean isAuthorized(Long id) {
         var userEmail = repository.findById(id).get().getEmail();
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        return userEmail.equals(authentication.getName());
+        var authentication = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userEmail.equals(authentication);
     }
 
 
