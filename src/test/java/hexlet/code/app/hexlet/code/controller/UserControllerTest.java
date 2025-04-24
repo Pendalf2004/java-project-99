@@ -81,8 +81,12 @@ class UserControllerTest {
         var request = post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(parser.writeValueAsString(createData));
-        mock.perform(request)
-                .andExpect(status().isCreated());
+        var response = mock.perform(request)
+                .andExpect(status().isCreated())
+                .andReturn();
+        var body = response.getResponse().getContentAsString();
+        Assertions.assertThat(body.contains(createData.getEmail()));
+        Assertions.assertThat(body.contains("id"));
         Assertions.assertThat(repository.findByEmail(createData.getEmail())).isNotEmpty();
 
     }
