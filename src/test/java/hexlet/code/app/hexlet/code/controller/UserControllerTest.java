@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.DTO.user.CreateUserDTO;
 import hexlet.code.DTO.user.UserDTO;
 import hexlet.code.mapper.UserMapper;
-import hexlet.code.model.Authentication;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.services.UserUtils;
 import org.assertj.core.api.Assertions;
@@ -16,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -63,7 +63,9 @@ class UserControllerTest {
     @BeforeEach
     public void setUp() {
         repository.deleteAll();
-        mock = MockMvcBuilders.webAppContextSetup(wac)
+        mock = MockMvcBuilders
+                .webAppContextSetup(wac)
+                .apply(SecurityMockMvcConfigurers.springSecurity())
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .build();
 
@@ -103,34 +105,19 @@ class UserControllerTest {
     @Test
     void update() throws Exception {
         utils.add(createData);
-        var tmp = utils.getAll();
         var objMapper = new ObjectMapper();
-
-        Authentication requestBody = new Authentication();
-        requestBody.setUsername(createData.getEmail());
-        requestBody.setPassword(createData.getPassword());
-        var loginRequest = post("/api/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objMapper.writeValueAsString(requestBody));
-
-        var response = mock.perform(loginRequest)
-                .andReturn();
-
-        var body = response.getResponse().getContentAsString();
-
         var token = jwt().jwt(b -> b.subject(createData.getEmail()));
         var data = new HashMap<String, String>();
         data.put("firstName", "New name");
-
         var request = put("/api/users/{id}", utils.getByEmail(createData.getEmail()).getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(parser.writeValueAsString(data))
                 .with(token);
 
-            var result = mock.perform(request)
+        var result = mock.perform(request)
                     .andExpect(status().isOk())
                     .andReturn();
-            body = result.getResponse().getContentAsString();
+        var body = result.getResponse().getContentAsString();
         assertThatJson(body).and(
                 v -> v.node("email").isEqualTo(createData.getEmail()),
                 v -> v.node("firstName").isEqualTo(data.get("firstName")),
@@ -151,10 +138,14 @@ class UserControllerTest {
     void delete() throws Exception {
         utils.add(createData);
         var user = utils.getByEmail(createData.getEmail());
-
+        var token = jwt().jwt(b -> b.subject(createData.getEmail()));
         if (!repository.findAll().isEmpty()) {
+            var request = MockMvcRequestBuilders
+                    .delete("/api/users/{id}", utils.getByEmail(createData.getEmail()).getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(token);
             var userId = repository.findByEmail(createData.getEmail()).get().getId();
-            mock.perform(MockMvcRequestBuilders.delete("/api/users/" + userId))
+            mock.perform(request)
                     .andExpect(status().isNoContent());
             Assertions.assertThat(repository.findAll()).isEmpty();
         }
@@ -165,7 +156,8 @@ class UserControllerTest {
         utils.add(createData);
         var user = utils.getByEmail(createData.getEmail());
 
-        var response = mock.perform(get("/api/users"))
+        var response = mock
+                .perform(get("/api/users"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();

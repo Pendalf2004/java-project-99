@@ -56,11 +56,28 @@ public class SecurityConfig {
                         .requestMatchers(mvcMatcherBuilder.pattern("/")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/exception")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/index.html")).permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/assets/**")).permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.POST, "/api/users")).permitAll()
+
                         .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/welcome")).permitAll()
+
+                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.POST, "/api/users")).permitAll()
+                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/api/users")).permitAll()
+                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/api/users/*")).permitAll()
+
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/labels/*")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/labels")).authenticated()
+
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/tasks/*")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/tasks")).authenticated()
+
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/task_statuses/*")).authenticated()
+                        .requestMatchers(mvcMatcherBuilder.pattern("/api/task_statuses")).authenticated()
+
+
+                        .requestMatchers("/doc_ui.html/**").permitAll()
+                        .requestMatchers("/api-docs/**").permitAll()
                         .anyRequest().authenticated())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer((rs) ->
                         rs.jwt((jwt) -> jwt.decoder(jwtDecoder)))
                 .httpBasic(Customizer.withDefaults())
