@@ -3,7 +3,7 @@ package hexlet.code.controller;
 import hexlet.code.DTO.taskStatus.CreateTaskStatusDTO;
 import hexlet.code.DTO.taskStatus.TaskStatusDTO;
 import hexlet.code.DTO.taskStatus.UpdateTaskStatusDTO;
-import hexlet.code.services.TaskStatusUtils;
+import hexlet.code.services.TaskStatusService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,11 +27,11 @@ import java.util.List;
 @RequestMapping("/api/task_statuses")
 public class TaskStatusController {
     @Autowired
-    private TaskStatusUtils utils;
+    private TaskStatusService taskStatusService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<TaskStatusDTO>> index() {
-        List<TaskStatusDTO> statuses =  utils.getAll();
+        List<TaskStatusDTO> statuses =  taskStatusService.getAll();
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(statuses.size()))
                 .body(statuses);
@@ -40,24 +40,24 @@ public class TaskStatusController {
     @GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public TaskStatusDTO show(@PathVariable Long id) {
-        return utils.getById(id);
+        return taskStatusService.getById(id);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public TaskStatusDTO create(@Valid @RequestBody CreateTaskStatusDTO createData) {
-        return utils.add(createData);
+        return taskStatusService.add(createData);
     }
 
     @PutMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public TaskStatusDTO update(@Valid @RequestBody UpdateTaskStatusDTO updateData, @PathVariable Long id) {
-        return utils.update(id, updateData);
+        return taskStatusService.update(id, updateData);
     }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        utils.delete(id);
+        taskStatusService.delete(id);
     }
 }

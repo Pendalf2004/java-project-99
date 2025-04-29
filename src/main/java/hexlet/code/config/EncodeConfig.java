@@ -35,6 +35,7 @@ public class EncodeConfig {
         return new NimbusJwtEncoder(jwkSource);
     }
 
+
     @Bean
     JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withPublicKey(keys.getPublicKey()).build();

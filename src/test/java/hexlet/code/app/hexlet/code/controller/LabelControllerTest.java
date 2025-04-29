@@ -6,11 +6,10 @@ import hexlet.code.DTO.label.UpdateLabelDTO;
 import hexlet.code.DTO.user.CreateUserDTO;
 import hexlet.code.mapper.LabelMapper;
 import hexlet.code.mapper.UserMapper;
-import hexlet.code.model.Label;
 import hexlet.code.model.User;
 import hexlet.code.repository.LabelRepository;
-import hexlet.code.services.LabelUtils;
-import hexlet.code.services.UserUtils;
+import hexlet.code.services.Label;
+import hexlet.code.services.UsersServices;
 import hexlet.code.utils.AppInit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +44,7 @@ class LabelControllerTest {
     private AppInit app;
 
     @Autowired
-    private UserUtils userUtils;
+    private UsersServices usersServices;
 
     @Autowired
     private UserMapper userMapper;
@@ -57,11 +56,11 @@ class LabelControllerTest {
     private LabelMapper labelMapper;
 
     @Autowired
-    private LabelUtils labelUtils;
+    private Label labelUtils;
 
     private User testUser;
 
-    private Label testLabel;
+    private hexlet.code.model.Label testLabel;
 
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
 
@@ -75,8 +74,8 @@ class LabelControllerTest {
         createUser.setPassword("password");
         createUser.setLastName("Ivanov");
         createUser.setFirstName("Ivan");
-        userUtils.add(createUser);
-        testUser = userMapper.map(userUtils.getByEmail(createUser.getEmail()));
+        usersServices.add(createUser);
+        testUser = userMapper.map(usersServices.getByEmail(createUser.getEmail()));
 
         token = jwt().jwt(b -> b.subject(testUser.getEmail()));
 

@@ -8,7 +8,7 @@ import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
-import hexlet.code.services.UserUtils;
+import hexlet.code.services.UsersServices;
 import lombok.AllArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class AppInit implements ApplicationRunner {
     private final TaskStatusRepository statusRepository;
 
     @Autowired
-    private final UserUtils userUtils;
+    private final UsersServices usersServices;
 
     @Autowired
     private final LabelRepository labelRepository;
@@ -52,7 +52,7 @@ public class AppInit implements ApplicationRunner {
         createData.setPassword("qwerty");
         createData.setLastName("admin");
         createData.setFirstName("admin");
-        userUtils.add(createData);
+        usersServices.add(createData);
     }
 
     private void setLabels() {

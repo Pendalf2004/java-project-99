@@ -6,7 +6,7 @@ import hexlet.code.DTO.user.CreateUserDTO;
 import hexlet.code.DTO.user.UserDTO;
 import hexlet.code.mapper.UserMapper;
 import hexlet.code.repository.UserRepository;
-import hexlet.code.services.UserUtils;
+import hexlet.code.services.UsersServices;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,7 +53,7 @@ class UserControllerTest {
     private UserRepository repository;
 
     @Autowired
-    private UserUtils utils;
+    private UsersServices utils;
 
     private CreateUserDTO createData = new CreateUserDTO();
 

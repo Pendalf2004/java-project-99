@@ -3,7 +3,7 @@ package hexlet.code.controller;
 import hexlet.code.DTO.user.CreateUserDTO;
 import hexlet.code.DTO.user.UpdateUserDTO;
 import hexlet.code.DTO.user.UserDTO;
-import hexlet.code.services.UserUtils;
+import hexlet.code.services.UsersServices;
 import hexlet.code.utils.AuthUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserUtils utils;
+    private UsersServices usersServices;
 
     @Autowired
     private AuthUtils auth;
@@ -36,32 +36,32 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserDTO create(@Valid @RequestBody CreateUserDTO createData) {
-        return utils.add(createData);
+        return usersServices.add(createData);
     }
 
     @GetMapping("/{id}")
     public UserDTO show(@PathVariable Long id) {
-        return utils.getById(id);
+        return usersServices.getById(id);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("@userRepository.findById(#id).get().getEmail().equals(authentication.name)")
     public UserDTO update(@Valid @RequestBody UpdateUserDTO updateData, @PathVariable Long id) {
-        return utils.update(id, updateData);
+        return usersServices.update(id, updateData);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("@userRepository.findById(#id).get().getEmail().equals(authentication.name)")
     public void delete(@PathVariable Long id) {
-        utils.delete(id);
+        usersServices.delete(id);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<UserDTO>> index() {
-        var content = utils.getAll();
+        var content = usersServices.getAll();
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(content.size()))
                 .body(content);

@@ -5,7 +5,7 @@ import hexlet.code.DTO.task.CreateTaskDTO;
 import hexlet.code.DTO.task.TaskDTO;
 import hexlet.code.DTO.task.UpdateTaskDTO;
 import hexlet.code.services.TaskFilter;
-import hexlet.code.services.TaskUtils;
+import hexlet.code.services.TasksService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +28,7 @@ import java.util.List;
 @RequestMapping("/api/tasks")
 public class TaskController {
     @Autowired
-    private TaskUtils utils;
+    private TasksService tasksService;
 
     @Autowired
     private TaskFilter specification;
@@ -39,34 +39,34 @@ public class TaskController {
                                                 @RequestParam(defaultValue = "100") Integer pageSize) {
         var spec = specification.build(taskParamsDTO);
         var pageable = PageRequest.of(page - 1, pageSize);
-        var result = utils.getAll(spec, pageable);
+        var result = tasksService.getAll(spec, pageable);
         return ResponseEntity.ok()
                 .header("X-Total-Count",
-                        String.valueOf(utils.getAll(spec,
+                        String.valueOf(tasksService.getAll(spec,
                                 PageRequest.of(0, Integer.MAX_VALUE)).size()))
                 .body(result);
     }
 
     @GetMapping("/{id}")
     public TaskDTO show(@PathVariable Long id) {
-        return utils.getById(id);
+        return tasksService.getById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public TaskDTO create(@Valid @RequestBody CreateTaskDTO createData) {
-        return utils.add(createData);
+        return tasksService.add(createData);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public TaskDTO update(@Valid @RequestBody UpdateTaskDTO updateData, @PathVariable Long id) {
-        return utils.update(id, updateData);
+        return tasksService.update(id, updateData);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        utils.delete(id);
+        tasksService.delete(id);
     }
 }

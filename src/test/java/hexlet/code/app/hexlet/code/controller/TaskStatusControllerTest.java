@@ -9,8 +9,8 @@ import hexlet.code.mapper.UserMapper;
 import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
 import hexlet.code.repository.TaskStatusRepository;
-import hexlet.code.services.TaskStatusUtils;
-import hexlet.code.services.UserUtils;
+import hexlet.code.services.TaskStatusService;
+import hexlet.code.services.UsersServices;
 import hexlet.code.utils.AppInit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,13 +46,13 @@ class TaskStatusControllerTest {
     private AppInit app;
 
     @Autowired
-    private UserUtils userUtils;
+    private UsersServices usersServices;
 
     @Autowired
     private UserMapper userMapper;
 
     @Autowired
-    private TaskStatusUtils statusUtils;
+    private TaskStatusService statusUtils;
 
     @Autowired
     private TaskStatusMapper taskStatusMapper;
@@ -72,8 +72,8 @@ class TaskStatusControllerTest {
         createUser.setPassword("password");
         createUser.setLastName("Ivanov");
         createUser.setFirstName("Ivan");
-        userUtils.add(createUser);
-        testUser = userMapper.map(userUtils.getByEmail(createUser.getEmail()));
+        usersServices.add(createUser);
+        testUser = userMapper.map(usersServices.getByEmail(createUser.getEmail()));
 
         token = jwt().jwt(b -> b.subject(testUser.getEmail()));
 

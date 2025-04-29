@@ -8,12 +8,11 @@ import hexlet.code.DTO.user.CreateUserDTO;
 import hexlet.code.mapper.LabelMapper;
 import hexlet.code.mapper.TaskMapper;
 import hexlet.code.mapper.UserMapper;
-import hexlet.code.model.Label;
 import hexlet.code.model.Task;
 import hexlet.code.model.User;
-import hexlet.code.services.LabelUtils;
-import hexlet.code.services.TaskUtils;
-import hexlet.code.services.UserUtils;
+import hexlet.code.services.Label;
+import hexlet.code.services.TasksService;
+import hexlet.code.services.UsersServices;
 import hexlet.code.utils.AppInit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,10 +51,10 @@ class TaskControllerTest {
     private AppInit app;
 
     @Autowired
-    private UserUtils userUtils;
+    private UsersServices usersServices;
 
     @Autowired
-    private TaskUtils taskUtils;
+    private TasksService tasksService;
 
     @Autowired
     private TaskMapper taskMapper;
@@ -64,7 +63,7 @@ class TaskControllerTest {
     private UserMapper userMapper;
 
     @Autowired
-    private LabelUtils labelUtils;
+    private Label labelUtils;
 
     @Autowired
     private LabelMapper labelMapper;
@@ -73,7 +72,7 @@ class TaskControllerTest {
 
     private Task testTask;
 
-    private Label testLabel;
+    private hexlet.code.model.Label testLabel;
 
     private SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor token;
 
@@ -86,8 +85,8 @@ class TaskControllerTest {
         createUser.setPassword("password");
         createUser.setLastName("Ivanov");
         createUser.setFirstName("Ivan");
-        userUtils.add(createUser);
-        testUser = userMapper.map(userUtils.getByEmail(createUser.getEmail()));
+        usersServices.add(createUser);
+        testUser = userMapper.map(usersServices.getByEmail(createUser.getEmail()));
 
         CreateLabelDTO createLabelData = new CreateLabelDTO();
         createLabelData.setName("test");
@@ -101,14 +100,14 @@ class TaskControllerTest {
         createTask.setTitle("title");
         createTask.setStatus("published");
         createTask.setTaskLabelIds(Set.of(testLabel.getId()));
-        taskUtils.add(createTask);
+        tasksService.add(createTask);
 
-        testTask = taskMapper.map(taskUtils.getAll().getFirst());
+        testTask = taskMapper.map(tasksService.getAll().getFirst());
     }
 
     @Test
     public void testUpdate() throws Exception {
-        var task = taskUtils.getById(testTask.getId());
+        var task = tasksService.getById(testTask.getId());
         var data = new HashMap<String, String>();
         var name = "New Task Name";
         data.put("title", name);
@@ -125,10 +124,10 @@ class TaskControllerTest {
                 v -> v.node("content").isEqualTo(testTask.getDescription()),
                 v -> v.node("title").isEqualTo(data.get("title")),
                 v -> v.node("status").isEqualTo(testTask.getTaskStatus().getSlug()),
-                v -> v.node("taskLabelIds").isEqualTo(testTask.getLabels().stream().map(Label::getId))
+                v -> v.node("taskLabelIds").isEqualTo(testTask.getLabels().stream().map(hexlet.code.model.Label::getId))
         );
 
-        var actualTask = taskMapper.map(taskUtils.getAll().stream()
+        var actualTask = taskMapper.map(tasksService.getAll().stream()
                 .findFirst().get());
 
         assertEquals(name, actualTask.getName());
@@ -174,7 +173,7 @@ class TaskControllerTest {
                         .content(om.writeValueAsString(updateData)))
                 .andReturn().getResponse().getContentAsString();
 
-        var updatedTask = taskUtils.getById(testTask.getId());
+        var updatedTask = tasksService.getById(testTask.getId());
 
         assertThat(updatedTask.getTitle()).isEqualTo(updateData.getTitle());
     }
@@ -185,7 +184,7 @@ class TaskControllerTest {
                         .with(token))
                 .andExpect(status().isNoContent())
                 .andReturn().getResponse();
-        assertThat(taskUtils.getAll().isEmpty());
+        assertThat(tasksService.getAll().isEmpty());
     }
 
     @Test

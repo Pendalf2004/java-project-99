@@ -63,16 +63,6 @@ public class SecurityConfig {
                         .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/api/users")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/api/users/*")).permitAll()
 
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/labels/*")).authenticated()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/labels")).authenticated()
-
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/tasks/*")).authenticated()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/tasks")).authenticated()
-
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/task_statuses/*")).authenticated()
-                        .requestMatchers(mvcMatcherBuilder.pattern("/api/task_statuses")).authenticated()
-
-
                         .requestMatchers("/doc_ui.html/**").permitAll()
                         .requestMatchers("/api-docs/**").permitAll()
                         .anyRequest().authenticated())
