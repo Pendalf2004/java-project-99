@@ -60,8 +60,8 @@ public class SecurityConfig {
                         .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/welcome")).permitAll()
 
                         .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.POST, "/api/users")).permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/api/users")).permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/api/users/*")).permitAll()
+//                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/api/users")).permitAll()
+//                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/api/users/*")).permitAll()
 
                         .requestMatchers("/doc_ui.html/**").permitAll()
                         .requestMatchers("/api-docs/**").permitAll()

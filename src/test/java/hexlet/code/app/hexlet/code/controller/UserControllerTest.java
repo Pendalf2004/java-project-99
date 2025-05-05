@@ -95,7 +95,12 @@ class UserControllerTest {
     void show() throws Exception {
         utils.add(createData);
         var user = utils.getByEmail(createData.getEmail());
-        var response = mock.perform(get("/api/users/" + user.getId()))
+        var token = jwt().jwt(b -> b.subject(createData.getEmail()));
+        var request = get("/api/users/{id}", utils.getByEmail(createData.getEmail()).getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(token);
+
+        var response = mock.perform(request)
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -159,9 +164,13 @@ class UserControllerTest {
     void index() throws Exception {
         utils.add(createData);
         var user = utils.getByEmail(createData.getEmail());
-
+        var token = jwt().jwt(b -> b.subject(createData.getEmail()));
+        var request = MockMvcRequestBuilders
+                .get("/api/users")
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(token);
         var response = mock
-                .perform(get("/api/users"))
+                .perform(request)
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();

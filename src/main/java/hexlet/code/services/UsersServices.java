@@ -53,7 +53,7 @@ public class UsersServices {
     }
 
     public void delete(Long id) {
-        List<Task> tasks = taskRepository.findAllByUserId(id);
+        List<Task> tasks = taskRepository.findAllByAssigneeId(id);
         if (!tasks.isEmpty()) {
             throw new InUseException("User has assigned tasks");
         }

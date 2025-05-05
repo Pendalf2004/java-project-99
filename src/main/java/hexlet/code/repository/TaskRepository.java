@@ -4,7 +4,7 @@ import hexlet.code.model.Task;
 import hexlet.code.model.TaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,9 +14,5 @@ public interface TaskRepository extends JpaRepository<Task, Long>, JpaSpecificat
 
     List<Task> findAllByTaskStatus(TaskStatus status);
 
-    @Query(value = """
-            SELECT * FROM tasks
-            WHERE tasks.assignee_id = ?1
-            """, nativeQuery = true)
-    List<Task> findAllByUserId(Long userId);
+    List<Task> findAllByAssigneeId(@Param("assigneeId") Long userId);
 }
