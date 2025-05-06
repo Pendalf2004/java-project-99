@@ -7,6 +7,7 @@ import hexlet.code.exception.NotFoundException;
 import hexlet.code.mapper.TaskMapper;
 import hexlet.code.model.Task;
 import hexlet.code.repository.TaskRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,9 +36,14 @@ public class TasksService {
         return getAll(Specification.anyOf(), PageRequest.of(0, 10000));
     }
 
+    @Transactional
     public TaskDTO getById(long id) {
-        Task task = repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Task with id " + id + " not found"));
+        Task task = new Task();
+        try {
+        task = repository.findTaskWithLabelsById(id);
+        } catch (Exception e) {
+            throw new NotFoundException("Task with id " + id + " not found");
+        }
         return mapper.map(task);
     }
 

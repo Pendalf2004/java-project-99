@@ -81,10 +81,7 @@ public abstract class TaskMapper {
                 : labels.stream()
                 .map(Label::getId)
                 .collect(Collectors.toSet());
-        return labels == null ? null
-                : labels.stream()
-                .map(Label::getId)
-                .collect(Collectors.toSet());
+        return tmp;
     }
 
     @Named("idToLabel")
