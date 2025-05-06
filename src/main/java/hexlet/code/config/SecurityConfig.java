@@ -54,14 +54,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(mvcMatcherBuilder.pattern("/api/login")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/")).permitAll()
+                        .requestMatchers("/assets/**").permitAll()
+
                         .requestMatchers(mvcMatcherBuilder.pattern("/exception")).permitAll()
                         .requestMatchers(mvcMatcherBuilder.pattern("/index.html")).permitAll()
 
                         .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/welcome")).permitAll()
 
                         .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.POST, "/api/users")).permitAll()
-//                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/api/users")).permitAll()
-//                        .requestMatchers(mvcMatcherBuilder.pattern(HttpMethod.GET, "/api/users/*")).permitAll()
 
                         .requestMatchers("/doc_ui.html/**").permitAll()
                         .requestMatchers("/api-docs/**").permitAll()
