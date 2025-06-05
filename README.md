@@ -8,3 +8,11 @@
 #### Allows to create and manage tasks, assign executives.
 
 #### Demo - [Task manager](https://java-project-99-k1jo.onrender.com)
+test login: 
+```
+hexlet@example.com
+```
+pass: 
+```
+qwerty
+```
